@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyTwin | Dijital İkiz Asistanı</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --accent: #38bdf8;
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+            --user-bubble: #0369a1;
+            --twin-bubble: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        header {
+            padding: 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: 1px;
+        }
+
+        #chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 1rem 1.25rem;
+            border-radius: 1.5rem;
+            line-height: 1.5;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background-color: var(--user-bubble);
+            border-bottom-right-radius: 0.25rem;
+            color: white;
+        }
+
+        .twin-message {
+            align-self: flex-start;
+            background-color: var(--twin-bubble);
+            border-bottom-left-radius: 0.25rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+            display: block;
+            opacity: 0.7;
+        }
+
+        footer {
+            padding: 2rem;
+            background: var(--bg-dark);
+        }
+
+        .input-area {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            gap: 10px;
+            background: var(--bg-card);
+            padding: 0.5rem;
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 1rem;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        button {
+            background-color: var(--accent);
+            color: var(--bg-dark);
+            border: none;
+            padding: 0 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        button:hover {
+            filter: brightness(1.1);
+            transform: scale(1.02);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        /* Loading Dots */
+        .typing {
+            display: flex;
+            gap: 4px;
+            padding: 10px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--text-dim);
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+
+        .dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            80%,
+            100% {
+                transform: scale(0);
+            }
+
+            40% {
+                transform: scale(1.0);
+            }
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 1rem;
+        }
+
+        .tab {
+            padding: 0.5rem 1.5rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .tab.active {
+            background: var(--accent);
+            color: var(--bg-dark);
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <h1>MYTWIN DUAL 🦾</h1>
+        <div class="tabs">
+            <div class="tab active" data-mode="chat">Cevaplayıcı</div>
+            <div class="tab" data-mode="rewrite">Yeniden Üretici</div>
+        </div>
+    </header>
+
+    <div id="chat-container">
+        <div class="message twin-message">
+            <span class="label">Twin</span>
+            <div id="welcome-msg">Noldu yine amk ne istiyon?</div>
+        </div>
+    </div>
+
+    <footer>
+        <form id="chat-form" class="input-area">
+            <input type="text" id="user-input" placeholder="Bir şeyler yaz..." autocomplete="off">
+            <button type="submit">Gönder</button>
+        </form>
+    </footer>
+
+    <script>
+        const form = document.getElementById('chat-form');
+        const input = document.getElementById('user-input');
+        const container = document.getElementById('chat-container');
+        const tabs = document.querySelectorAll('.tab');
+        const welcomeMsg = document.getElementById('welcome-msg');
+
+        let currentMode = 'chat';
+
+        // Mode Switching
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                currentMode = tab.dataset.mode;
+
+                // Clear and Update UI
+                container.innerHTML = '';
+                if (currentMode === 'chat') {
+                    input.placeholder = "Bir şeyler yaz...";
+                    form.querySelector('button').textContent = "Gönder";
+                    addMessage('Twin', 'Noldu yine amk ne istiyon?');
+                } else {
+                    input.placeholder = "Orijinal metni buraya yapıştır...";
+                    form.querySelector('button').textContent = "Dönüştür";
+                    addMessage('Twin', 'Hangi metni kendi tarzıma çevireyim? Yaz bekletme amk.');
+                }
+            });
+        });
+
+        function addMessage(role, text) {
+            const div = document.createElement('div');
+            // Mapping roles to labels and styles
+            let displayRole = role;
+            let bubbleClass = 'twin-message';
+
+            if (role === 'User') {
+                bubbleClass = 'user-message';
+                displayRole = currentMode === 'chat' ? 'Kullanıcı' : 'Orijinal Metin';
+            } else if (role === 'Twin') {
+                displayRole = currentMode === 'chat' ? 'Twin (Cevaplayıcı)' : 'Twin (Yeniden Üretici)';
+            }
+
+            div.className = `message ${bubbleClass}`;
+
+            const label = document.createElement('span');
+            label.className = 'label';
+            label.textContent = displayRole;
+
+            const content = document.createElement('div');
+            content.textContent = text;
+
+            div.appendChild(label);
+            div.appendChild(content);
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function showLoading() {
+            const div = document.createElement('div');
+            div.className = 'message twin-message loading-box';
+            div.innerHTML = `<span class="label">Twin ${currentMode === 'chat' ? 'Cevap Veriyor' : 'Yeniden Üretiyor'}...</span><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+            return div;
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            addMessage('User', msg);
+            input.value = '';
+
+            const loading = showLoading();
+
+            try {
+                const response = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg, mode: currentMode })
+                });
+                const data = await response.json();
+
+                loading.remove();
+                if (data.response) {
+                    addMessage('Twin', data.response);
+                } else {
+                    addMessage('Twin', 'Hata oluştu amk.');
+                }
+            } catch (err) {
+                loading.remove();
+                addMessage('Twin', 'Bağlantı hatası aq.');
+            }
+        });
+    </script>
+</body>
+
+</html>

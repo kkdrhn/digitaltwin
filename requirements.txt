@@ -1,0 +1,10 @@
+google-generativeai
+chromadb
+pydantic<2.0
+python-dotenv
+tqdm
+httpx
+beautifulsoup4
+Pillow
+fastapi
+uvicorn
