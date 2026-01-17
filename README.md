@@ -15,8 +15,8 @@ MyTwin, WhatsApp sohbet geçmişinizi kullanarak sizin üslubunuzu, şakaların�
 
 1. **Depoyu klonlayın:**
    ```bash
-   git clone https://github.com/kkdrhn/mytwin.git
-   cd mytwin
+   git clone https://github.com/kkdrhn/digitaltwin.git
+   cd digitaltwin
    ```
 
 2. **Sanal ortam oluşturun ve bağımlılıkları yükleyin:**
