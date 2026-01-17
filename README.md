@@ -56,6 +56,10 @@ Web arayüzünü başlatmak için:
 ```bash
 python app.py
 ```
+
+<img width="2940" height="1538" alt="image" src="https://github.com/user-attachments/assets/c1dce1f1-5b58-4d64-8f86-340f9f536ebf" />
+
+
 Ardından tarayıcınızdan `http://localhost:8000` adresine gidin. Artık hazırsınız!
 
 ## 📂 Proje Yapısı
